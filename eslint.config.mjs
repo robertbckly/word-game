@@ -18,6 +18,11 @@ export default tseslint.config(
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
     ],
+    settings: {
+      'import/resolver': {
+        typescript: { alwaysTryTypes: true },
+      },
+    },
     rules: {
       'import/no-cycle': ['error', { maxDepth: Infinity }],
     },
