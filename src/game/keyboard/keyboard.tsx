@@ -60,7 +60,7 @@ export const Keyboard = ({ onNewLetter, onBackspace, onEnter }: Props) => {
               aria-hidden={key === BLANK}
               onClick={() => handleKeyDown(key)}
               className={twMerge(
-                'cursor-pointer overflow-hidden rounded bg-gray-500 py-4 font-bold text-white uppercase *:m-auto',
+                'cursor-pointer overflow-hidden rounded bg-gray-500 py-4 font-bold text-white uppercase *:m-auto active:bg-gray-400',
                 // Multi-letter buttons are 1.5x wide
                 key && key.length === 1
                   ? 'w-[10vw] text-xl'

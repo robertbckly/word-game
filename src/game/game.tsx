@@ -1,26 +1,20 @@
 import { useState } from 'react';
-import type { Board as BoardType } from '../shared/types/types';
 import { Board } from './board/board';
 import { Keyboard } from './keyboard/keyboard';
+import { INIT_BOARD } from '../shared/constants/constants';
 import {
   getIndexOfLastInput,
   getIndexOfNextInput,
 } from '../shared/utils/utils';
 
-const INIT_BOARD: BoardType = [
-  ['a', 'd', 'e', 'i', 'u'],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-  [null, null, null, null, null],
-];
-
 export const Game = () => {
   const [board, setBoard] = useState(INIT_BOARD);
   const [attempt, setAttempt] = useState(0);
+  const [done, setDone] = useState(false);
 
   const handleNewLetter = (letter: string) => {
+    if (done) return;
+
     const boardCopy = structuredClone(board);
     const guessCopy = boardCopy[attempt];
     if (!guessCopy) return;
@@ -33,6 +27,8 @@ export const Game = () => {
   };
 
   const handleBackspace = () => {
+    if (done) return;
+
     const boardCopy = structuredClone(board);
     const guessCopy = boardCopy[attempt];
     if (!guessCopy) return;
@@ -44,8 +40,20 @@ export const Game = () => {
   };
 
   const handleEnter = () => {
-    const currentGuess = board[attempt];
-    if (currentGuess?.at(-1)) setAttempt(attempt + 1);
+    if (done) return;
+
+    const guess = board[attempt];
+    const isGuessComplete = Boolean(guess?.at(-1));
+    const isBoardComplete = isGuessComplete && attempt === board.length - 1;
+
+    // TODO
+    if (isBoardComplete) {
+      alert('Game over!');
+      setDone(true);
+      return;
+    }
+
+    if (isGuessComplete) setAttempt(attempt + 1);
   };
 
   return (
