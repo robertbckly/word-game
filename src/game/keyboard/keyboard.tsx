@@ -23,6 +23,7 @@ type Props = {
 };
 
 export const Keyboard = ({ onNewLetter, onBackspace, onEnter }: Props) => {
+  // Process both virtual and device-keyboard input
   const handleKeyDown = useCallback(
     (key: string) => {
       if (key === CLEAR) return onBackspace();

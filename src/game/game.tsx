@@ -7,16 +7,18 @@ import {
   getIndexOfNextInput,
 } from '../shared/utils/utils';
 
+const TARGET = 'apple';
+
 export const Game = () => {
   const [board, setBoard] = useState(INIT_BOARD);
-  const [attempt, setAttempt] = useState(0);
+  const [guessIndex, setGuessIndex] = useState(0);
   const [done, setDone] = useState(false);
 
   const handleNewLetter = (letter: string) => {
     if (done) return;
 
     const boardCopy = structuredClone(board);
-    const guessCopy = boardCopy[attempt];
+    const guessCopy = boardCopy[guessIndex];
     if (!guessCopy) return;
 
     const nextIndex = getIndexOfNextInput(guessCopy);
@@ -30,7 +32,7 @@ export const Game = () => {
     if (done) return;
 
     const boardCopy = structuredClone(board);
-    const guessCopy = boardCopy[attempt];
+    const guessCopy = boardCopy[guessIndex];
     if (!guessCopy) return;
 
     const lastIndex = getIndexOfLastInput(guessCopy);
@@ -42,23 +44,25 @@ export const Game = () => {
   const handleEnter = () => {
     if (done) return;
 
-    const guess = board[attempt];
+    const guess = board[guessIndex];
     const isGuessComplete = Boolean(guess?.at(-1));
-    const isBoardComplete = isGuessComplete && attempt === board.length - 1;
+    const isBoardComplete = isGuessComplete && guessIndex === board.length - 1;
+    const isGuessCorrect = Boolean(
+      guess?.every((input, index) => TARGET[index] === input),
+    );
 
-    // TODO
-    if (isBoardComplete) {
-      alert('Game over!');
-      setDone(true);
-      return;
+    if (isGuessComplete) {
+      setGuessIndex(guessIndex + 1);
     }
 
-    if (isGuessComplete) setAttempt(attempt + 1);
+    if (isGuessCorrect || isBoardComplete) {
+      setDone(true);
+    }
   };
 
   return (
     <main className="mx-auto flex h-[100dvh] w-full max-w-lg flex-col items-center justify-evenly gap-8 p-1">
-      <Board board={board} />
+      <Board board={board} target={TARGET} guessIndex={guessIndex} />
       <Keyboard
         onNewLetter={handleNewLetter}
         onBackspace={handleBackspace}
