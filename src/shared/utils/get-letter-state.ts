@@ -28,17 +28,6 @@ export const getLetterState = ({
   const isBoardScope = params.scope === 'board';
   const isKeyboardScope = params.scope === 'keyboard';
 
-  if (
-    (isKeyboardScope && params.letter?.length !== 1) ||
-    (isKeyboardScope && !board?.flat().includes(params.letter))
-  ) {
-    return 'unused';
-  }
-
-  if (isKeyboardScope && params.letter && !target.includes(params.letter)) {
-    return 'incorrect';
-  }
-
   const [guessIndex, letterIndex] = isBoardScope
     ? params.position
     : [NULL_POSITION, NULL_POSITION];
@@ -47,20 +36,25 @@ export const getLetterState = ({
     guessIndex !== NULL_POSITION && letterIndex !== NULL_POSITION;
 
   if (
+    (isKeyboardScope && params.letter?.length !== 1) ||
+    (isKeyboardScope && !board?.flat().includes(params.letter)) ||
+    (isBoardScope && !isValidPosition) ||
+    (isBoardScope && isValidPosition && !board[guessIndex]?.[letterIndex])
+  ) {
+    return 'unused';
+  }
+
+  if (
     isBoardScope &&
-    isValidPosition &&
     board[guessIndex]?.[letterIndex] === target[letterIndex]
   ) {
     return 'correct';
   }
 
-  if (
-    isBoardScope &&
-    isValidPosition &&
-    board[guessIndex]?.[letterIndex] &&
-    target.includes(board[guessIndex][letterIndex])
-  ) {
-    return 'possible';
+  if (isBoardScope && board[guessIndex]?.[letterIndex]) {
+    return target.includes(board[guessIndex][letterIndex])
+      ? 'possible'
+      : 'incorrect';
   }
 
   if (
@@ -74,8 +68,8 @@ export const getLetterState = ({
     return 'correct';
   }
 
-  if (isKeyboardScope && params.letter && target.includes(params.letter)) {
-    return 'possible';
+  if (isKeyboardScope && params.letter) {
+    return target.includes(params.letter) ? 'possible' : 'incorrect';
   }
 
   return 'unused';
