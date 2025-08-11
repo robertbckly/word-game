@@ -5,6 +5,7 @@ import { INIT_BOARD } from '../shared/constants/constants';
 import {
   getIndexOfLastInput,
   getIndexOfNextInput,
+  getLetterState,
 } from '../shared/utils/utils';
 
 const TARGET = 'apple';
@@ -48,7 +49,7 @@ export const Game = () => {
     const isGuessComplete = Boolean(guess?.at(-1));
     const isBoardComplete = isGuessComplete && guessIndex === board.length - 1;
     const isGuessCorrect = Boolean(
-      guess?.every((input, index) => TARGET[index] === input),
+      guess?.every((letter, index) => TARGET[index] === letter),
     );
 
     if (isGuessComplete) {
@@ -62,8 +63,16 @@ export const Game = () => {
 
   return (
     <main className="mx-auto flex h-[100dvh] w-full max-w-lg flex-col items-center justify-evenly gap-8 p-1">
-      <Board board={board} target={TARGET} guessIndex={guessIndex} />
+      <Board board={board} target={TARGET} activeGuessIndex={guessIndex} />
       <Keyboard
+        getLetterState={(letter) =>
+          getLetterState({
+            scope: 'keyboard',
+            board: board.slice(0, guessIndex),
+            target: TARGET,
+            letter,
+          })
+        }
         onNewLetter={handleNewLetter}
         onBackspace={handleBackspace}
         onEnter={handleEnter}

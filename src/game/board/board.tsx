@@ -1,37 +1,39 @@
 import { twMerge } from 'tailwind-merge';
 import type { Board as BoardType } from '../../shared/types/types';
+import { getLetterState } from '../../shared/utils/utils';
 
 type props = {
   board: BoardType;
   target: string;
-  guessIndex: number;
+  activeGuessIndex: number;
 };
 
-export const Board = ({ board, target, guessIndex: guessIndexProp }: props) => (
+export const Board = ({ board, target, activeGuessIndex }: props) => (
   <div className="flex aspect-[5/6] h-full max-h-96 flex-col gap-1">
     {board.map((guess, guessIndex) => (
       <div
         key={guessIndex} // guesses won't move
         className="flex gap-[inherit]"
       >
-        {guess.map((input, inputIndex) => {
-          const canHighlight = guessIndex < guessIndexProp;
-          const isCorrect = input && target[inputIndex] === input;
-          const isPossible = !isCorrect && input && target.includes(input);
+        {guess.map((letter, letterIndex) => {
+          const state = getLetterState({
+            scope: 'board',
+            board: board.slice(0, activeGuessIndex),
+            target,
+            position: [guessIndex, letterIndex],
+          });
           return (
             <div
-              key={inputIndex} // inputs won't move
+              key={letterIndex} // letters won't move
               className={twMerge(
                 'flex aspect-square flex-1 items-center justify-center rounded border-2 border-gray-600 text-3xl font-bold text-white uppercase',
-                canHighlight &&
-                  isPossible &&
+                state === 'possible' &&
                   'border-transparent bg-yellow-500 grayscale-50',
-                canHighlight &&
-                  isCorrect &&
+                state === 'correct' &&
                   'border-transparent bg-green-600 grayscale-25',
               )}
             >
-              {input}
+              {letter}
             </div>
           );
         })}
