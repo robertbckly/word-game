@@ -31,11 +31,10 @@ export const Board = ({ board, target, activeGuessIndex }: props) => (
                 key={letterIndex} // letters won't move
                 className={twMerge(
                   'flex aspect-square flex-1 items-center justify-center rounded border-2 border-gray-600 text-3xl font-bold text-white uppercase',
-                  state === 'incorrect' && 'border-transparent bg-gray-700',
-                  state === 'possible' &&
-                    'border-transparent bg-yellow-500 grayscale-50',
-                  state === 'correct' &&
-                    'border-transparent bg-green-600 grayscale-25',
+                  state !== 'unused' && 'border-transparent',
+                  state === 'incorrect' && 'bg-gray-700',
+                  state === 'possible' && 'bg-yellow-500 grayscale-50',
+                  state === 'correct' && 'bg-green-600 grayscale-25',
                 )}
               >
                 {letter}

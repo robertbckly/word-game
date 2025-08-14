@@ -1,4 +1,11 @@
-import type { Guess, GuessLetterStates, Letter } from '../types/types';
+import type {
+  Guess,
+  GuessLetterStates,
+  Letter,
+  LetterState,
+} from '../types/types';
+
+const INIT_LETTER_STATE: LetterState = 'incorrect';
 
 type Params = {
   guess: Guess;
@@ -10,11 +17,11 @@ export const getGuessLetterStates = ({
   target,
 }: Params): GuessLetterStates => {
   const guessLetterStates: GuessLetterStates = [
-    'incorrect',
-    'incorrect',
-    'incorrect',
-    'incorrect',
-    'incorrect',
+    INIT_LETTER_STATE,
+    INIT_LETTER_STATE,
+    INIT_LETTER_STATE,
+    INIT_LETTER_STATE,
+    INIT_LETTER_STATE,
   ];
 
   const remainingTargetLetters: Letter[] = [...target];
@@ -33,7 +40,7 @@ export const getGuessLetterStates = ({
     const indexOfPossible = guess.findIndex(
       (guessLetter, guessLetterIndex) =>
         guessLetter === targetLetter &&
-        guessLetterStates[guessLetterIndex] !== 'correct',
+        guessLetterStates[guessLetterIndex] === INIT_LETTER_STATE,
     );
     if (indexOfPossible === -1) return;
     guessLetterStates[indexOfPossible] = 'possible';
