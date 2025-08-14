@@ -7,11 +7,12 @@ import {
   getIndexOfNextInput,
   getKeyboardLetterState,
 } from '../shared/utils/utils';
+import { type Board as BoardType } from '../shared/types/types';
 
 const TARGET = 'apple';
 
 export const Game = () => {
-  const [board, setBoard] = useState(INIT_BOARD);
+  const [board, setBoard] = useState<BoardType>(INIT_BOARD);
   const [guessIndex, setGuessIndex] = useState(0);
   const [done, setDone] = useState(false);
 
