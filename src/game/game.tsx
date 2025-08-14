@@ -5,7 +5,7 @@ import { INIT_BOARD } from '../shared/constants/constants';
 import {
   getIndexOfLastInput,
   getIndexOfNextInput,
-  getLetterState,
+  getKeyboardLetterState,
 } from '../shared/utils/utils';
 
 const TARGET = 'apple';
@@ -66,11 +66,10 @@ export const Game = () => {
       <Board board={board} target={TARGET} activeGuessIndex={guessIndex} />
       <Keyboard
         getLetterState={(letter) =>
-          getLetterState({
-            scope: 'keyboard',
-            board: board.slice(0, guessIndex),
-            target: TARGET,
+          getKeyboardLetterState({
             letter,
+            target: TARGET,
+            board: board.slice(0, guessIndex),
           })
         }
         onNewLetter={handleNewLetter}

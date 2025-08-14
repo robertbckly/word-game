@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 import type { Board as BoardType } from '../../shared/types/types';
-import { getLetterState } from '../../shared/utils/utils';
+import { getBoardLetterState } from '../../shared/utils/utils';
 
 type props = {
   board: BoardType;
@@ -16,11 +16,10 @@ export const Board = ({ board, target, activeGuessIndex }: props) => (
         className="flex gap-[inherit]"
       >
         {guess.map((letter, letterIndex) => {
-          const state = getLetterState({
-            scope: 'board',
-            board: board.slice(0, activeGuessIndex),
-            target,
+          const state = getBoardLetterState({
             position: [guessIndex, letterIndex],
+            target,
+            board: board.slice(0, activeGuessIndex),
           });
           return (
             <div
