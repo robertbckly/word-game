@@ -8,8 +8,11 @@ import {
   getKeyboardLetterState,
 } from '../shared/utils/utils';
 import { type Board as BoardType } from '../shared/types/types';
+// @ts-expect-error package declares wrong const / export
+import { generate, wordList } from 'random-words';
 
-const TARGET = 'apple';
+const TARGET = generate({ minLength: 5, maxLength: 5 }) as string;
+console.log(`Not-so-subtle hint: ${TARGET}`);
 
 export const Game = () => {
   const [board, setBoard] = useState<BoardType>(INIT_BOARD);
@@ -48,6 +51,11 @@ export const Game = () => {
 
     const guess = board[guessIndex];
     const isGuessComplete = Boolean(guess?.at(-1));
+
+    if (guess && isGuessComplete && !wordList.includes(guess.join(''))) {
+      return;
+    }
+
     const isBoardComplete = isGuessComplete && guessIndex === board.length - 1;
     const isGuessCorrect = Boolean(
       guess?.every((letter, index) => TARGET[index] === letter),

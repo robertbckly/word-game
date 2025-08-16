@@ -19,8 +19,8 @@ export const getKeyboardLetterState = ({
   }
 
   if (
-    board.some((guess) =>
-      guess.some(
+    board.find((guess) =>
+      guess.find(
         (guessLetter, i) => guessLetter === letter && guessLetter === target[i],
       ),
     )
