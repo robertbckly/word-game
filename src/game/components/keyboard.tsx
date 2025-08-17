@@ -1,7 +1,7 @@
 import { BackspaceIcon } from '@heroicons/react/24/outline';
 import { useCallback, useEffect, type ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
-import type { LetterState } from '../../shared/types/types';
+import type { GameState, LetterState } from '../../shared/types/types';
 
 const BLANK = '\u00A0';
 const ENTER = 'enter';
@@ -18,6 +18,7 @@ const KEY_ROWS = [
 ] as const;
 
 type Props = {
+  gameState: GameState;
   getLetterState: (letter: string) => LetterState;
   onNewLetter: (letter: string) => void;
   onBackspace: () => void;
@@ -25,34 +26,36 @@ type Props = {
 };
 
 export const Keyboard = ({
+  gameState,
   getLetterState,
   onNewLetter,
   onBackspace,
   onEnter,
 }: Props) => {
   // Process both virtual and device-keyboard input
-  const handleKeyDown = useCallback(
+  const handleKeyPress = useCallback(
     (key: string) => {
+      if (gameState !== 'active') return;
       if (key === CLEAR) return onBackspace();
       if (key === ENTER) return onEnter();
       // Filter for single alpha character
       return /^[a-zA-Z]$/.test(key) && onNewLetter(key);
     },
-    [onBackspace, onEnter, onNewLetter],
+    [gameState, onBackspace, onEnter, onNewLetter],
   );
 
   // Accept device-keyboard input
   useEffect(() => {
-    const handleDeviceKeyDown = (e: KeyboardEvent) => {
+    const handleDeviceKeyUp = (e: KeyboardEvent) => {
       const { key } = e;
-      if (key === 'Backspace') return handleKeyDown(CLEAR);
-      if (key === 'Enter') return handleKeyDown(ENTER);
-      return handleKeyDown(key);
+      if (key === 'Backspace') return handleKeyPress(CLEAR);
+      if (key === 'Enter') return handleKeyPress(ENTER);
+      return handleKeyPress(key);
     };
 
-    document.addEventListener('keydown', handleDeviceKeyDown);
-    return () => document.removeEventListener('keydown', handleDeviceKeyDown);
-  }, [handleKeyDown, onBackspace, onEnter, onNewLetter]);
+    document.addEventListener('keyup', handleDeviceKeyUp);
+    return () => document.removeEventListener('keyup', handleDeviceKeyUp);
+  }, [handleKeyPress]);
 
   // Render virtual keyboard
   return (
@@ -68,7 +71,7 @@ export const Keyboard = ({
               <button
                 key={keyIndex} // keys won't move
                 aria-hidden={key === BLANK}
-                onClick={() => handleKeyDown(key)}
+                onClick={() => handleKeyPress(key)}
                 className={twMerge(
                   'cursor-pointer overflow-hidden rounded bg-gray-500 py-4 font-bold text-white uppercase *:m-auto active:bg-gray-400',
                   // Multi-letter buttons are 1.5x wide

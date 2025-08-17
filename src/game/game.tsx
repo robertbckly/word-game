@@ -6,12 +6,11 @@ import {
   getKeyboardLetterState,
   getTargetForToday,
 } from '../shared/utils/utils';
-import { type Board as BoardType } from '../shared/types/types';
+import { type Board as BoardType, type GameState } from '../shared/types/types';
 import { Board } from './components/board';
 import { Keyboard } from './components/keyboard';
 import { Info } from './components/info';
-
-type GameState = 'active' | 'won' | 'lost';
+import { GameOverModal } from './components/game-over-modal';
 
 const target = getTargetForToday();
 console.log(`Not-so-subtle hint: ${target}`);
@@ -21,6 +20,7 @@ export const Game = () => {
   const [guessIndex, setGuessIndex] = useState(0);
   const [gameState, setGameState] = useState<GameState>('active');
   const [showGuessWarning, setShowGuessWarning] = useState(false);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
 
   if (!target) {
     return <p className="p-2 text-center text-white">An error occurred :-(</p>;
@@ -68,8 +68,9 @@ export const Game = () => {
     const isBoardComplete = guessIndex === board.length - 1;
 
     // Note: `guessIndex` increments again at end so letter states are revealed
-    setGuessIndex(guessIndex + 1);
     setGameState(isGuessCorrect ? 'won' : isBoardComplete ? 'lost' : 'active');
+    setGuessIndex(guessIndex + 1);
+    setShowGameOverModal(isGuessCorrect || isBoardComplete);
   };
 
   return (
@@ -77,6 +78,7 @@ export const Game = () => {
       <Board board={board} target={target} activeGuessIndex={guessIndex} />
 
       <Keyboard
+        gameState={gameState}
         getLetterState={(letter) =>
           getKeyboardLetterState({
             letter,
@@ -96,6 +98,12 @@ export const Game = () => {
       )}
       {gameState === 'won' && <Info className="animate-bounce">🏆 🎉</Info>}
       {gameState === 'lost' && <Info className="capitalize">{target}</Info>}
+
+      <GameOverModal
+        open={showGameOverModal}
+        onClose={() => setShowGameOverModal(false)}
+        gameState={gameState}
+      />
     </main>
   );
 };

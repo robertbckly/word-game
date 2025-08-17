@@ -25,7 +25,7 @@ export const Info = ({
     <p
       {...props}
       className={twMerge(
-        'absolute top-[10lvh] mx-auto max-w-2xs min-w-[5rem] rounded bg-gray-100 px-3 py-2 text-center font-semibold wrap-anywhere',
+        'absolute top-[10lvh] mx-auto max-w-2xs min-w-[5rem] rounded bg-black/95 px-3 py-2 text-center font-semibold wrap-anywhere text-white',
         props.className,
       )}
     />

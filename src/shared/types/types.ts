@@ -9,3 +9,4 @@ export type GuessLetterStates = [
   LetterState,
 ]; // x5
 export type Board = [Guess, Guess, Guess, Guess, Guess, Guess]; // x6
+export type GameState = 'active' | 'won' | 'lost';
