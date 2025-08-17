@@ -66,16 +66,21 @@ export const Game = () => {
 
     const isGuessCorrect = guess.every((letter, i) => letter === target[i]);
     const isBoardComplete = guessIndex === board.length - 1;
+    const isGameOver = isGuessCorrect || isBoardComplete;
 
-    // Note: `guessIndex` increments again at end so letter states are revealed
     setGameState(isGuessCorrect ? 'won' : isBoardComplete ? 'lost' : 'active');
-    setGuessIndex(guessIndex + 1);
-    setShowGameOverModal(isGuessCorrect || isBoardComplete);
+    setGuessIndex(isGameOver ? guessIndex : guessIndex + 1);
+    setShowGameOverModal(isGameOver);
   };
 
   return (
     <main className="relative mx-auto flex h-[100dvh] w-full max-w-lg flex-col items-center justify-evenly gap-8 p-1">
-      <Board board={board} target={target} activeGuessIndex={guessIndex} />
+      <Board
+        board={board}
+        target={target}
+        activeGuessIndex={guessIndex}
+        isGameOver={gameState !== 'active'}
+      />
 
       <Keyboard
         gameState={gameState}
@@ -103,6 +108,9 @@ export const Game = () => {
         open={showGameOverModal}
         onClose={() => setShowGameOverModal(false)}
         gameState={gameState}
+        board={board}
+        target={target}
+        activeGuessIndex={guessIndex}
       />
     </main>
   );

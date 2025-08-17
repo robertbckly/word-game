@@ -10,13 +10,22 @@ type props = {
   board: BoardType;
   target: string;
   activeGuessIndex: number;
+  isGameOver: boolean;
 };
 
-export const Board = ({ board, target, activeGuessIndex }: props) => (
+export const Board = ({
+  board,
+  target,
+  activeGuessIndex,
+  isGameOver,
+}: props) => (
   <div className="flex aspect-[5/6] h-full max-h-96 flex-col gap-1">
     {board.map((guess, guessIndex) => {
+      const maxRevealIndex = isGameOver
+        ? activeGuessIndex
+        : activeGuessIndex - 1;
       const guessLetterStates: GuessLetterStates =
-        guessIndex < activeGuessIndex
+        guessIndex <= maxRevealIndex
           ? getGuessLetterStates({ guess, target })
           : INIT_GUESS_LETTER_STATES;
       return (

@@ -1,13 +1,30 @@
 import type { ComponentProps } from 'react';
 import { Modal } from '../../shared/components/components';
-import type { GameState } from '../../shared/types/types';
+import type { Board, GameState, LetterState } from '../../shared/types/types';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { getGuessLetterStates } from '../../shared/utils/utils';
+
+const EMOJI: Readonly<Record<LetterState, string>> = {
+  correct: '🟩',
+  possible: '🟨',
+  incorrect: '⬛️',
+  unused: '',
+};
 
 type Props = ComponentProps<typeof Modal> & {
   gameState: GameState;
+  board: Board;
+  target: string;
+  activeGuessIndex: number;
 };
 
-export const GameOverModal = ({ gameState, ...props }: Props) => {
+export const GameOverModal = ({
+  gameState,
+  board,
+  target,
+  activeGuessIndex,
+  ...props
+}: Props) => {
   if (gameState !== 'won' && gameState !== 'lost') {
     return null;
   }
@@ -17,15 +34,15 @@ export const GameOverModal = ({ gameState, ...props }: Props) => {
       <div className="flex flex-col items-center">
         <button
           aria-label="Hide game-over dialog"
-          onClick={() => props.onClose()}
+          onClick={props.onClose}
           className="aspect-square w-6 cursor-pointer self-end"
         >
           <XMarkIcon />
         </button>
 
-        <h1 className="text-3xl font-bold">
+        <h2 className="text-3xl font-bold">
           {gameState === 'won' ? 'Congratulations!' : 'Game over :-('}
-        </h1>
+        </h2>
 
         <p className="mt-2 text-lg">
           {gameState === 'won'
@@ -33,14 +50,19 @@ export const GameOverModal = ({ gameState, ...props }: Props) => {
             : 'Better luck next time!'}
         </p>
 
-        <li className="my-8 list-none text-2xl">
-          <ul>🟩🟩🟩⬛️🟨</ul>
-          <ul>🟩🟩🟩⬛️🟨</ul>
-          <ul>🟩🟩🟩⬛️🟨</ul>
-          <ul>🟩🟩🟩⬛️🟨</ul>
-          <ul>🟩🟩🟩⬛️🟨</ul>
-          <ul>🟩🟩🟩⬛️🟨</ul>
-        </li>
+        {/* Emoji result-map */}
+        <ul className="my-8 text-2xl">
+          {board.map((guess, guessIndex) => {
+            if (guessIndex > activeGuessIndex) return null;
+            const letterStates = getGuessLetterStates({ guess, target });
+            return (
+              // Guesses won't move; index key is fine
+              <li key={guessIndex}>
+                {letterStates.map((state) => EMOJI[state])}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </Modal>
   );
