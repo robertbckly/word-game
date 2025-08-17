@@ -9,19 +9,17 @@ type Props = ComponentProps<'dialog'> & {
 export const Modal = ({ open, onClose, ...props }: Props) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  // Sync dialog open-state via modal methods
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (!dialog.open && open) {
-      dialog.showModal();
-    } else {
-      dialog.close();
-    }
+
     dialog.addEventListener('close', onClose);
+    if (!dialog.open && open) dialog.showModal();
+    if (dialog.open && !open) dialog.close();
+
     return () => dialog.removeEventListener('close', onClose);
   }, [onClose, open]);
-
-  if (!open) return null;
 
   return (
     <dialog
