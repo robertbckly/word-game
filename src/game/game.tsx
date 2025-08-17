@@ -1,23 +1,32 @@
 import { useState } from 'react';
 import { Board } from './board/board';
 import { Keyboard } from './keyboard/keyboard';
-import { INIT_BOARD } from '../shared/constants/constants';
+import {
+  INIT_BOARD,
+  DICTIONARY,
+  TARGET_WORDS,
+} from '../shared/constants/constants';
 import {
   getIndexOfLastInput,
   getIndexOfNextInput,
   getKeyboardLetterState,
 } from '../shared/utils/utils';
 import { type Board as BoardType } from '../shared/types/types';
-// @ts-expect-error package declares wrong const / export
-import { generate, wordList } from 'random-words';
 
-const TARGET = generate({ minLength: 5, maxLength: 5 }) as string;
-console.log(`Not-so-subtle hint: ${TARGET}`);
+// Note: random index is floored, so it can't possibly exceed greatest index
+const targetWordsLength = TARGET_WORDS.length;
+const randomTargetIndex = Math.floor(Math.random() * targetWordsLength);
+const target = TARGET_WORDS[randomTargetIndex];
+console.log(`Not-so-subtle hint: ${target}`);
 
 export const Game = () => {
   const [board, setBoard] = useState<BoardType>(INIT_BOARD);
   const [guessIndex, setGuessIndex] = useState(0);
   const [done, setDone] = useState(false);
+
+  if (!target) {
+    return <p className="p-2 text-center text-white">An error occurred :-(</p>;
+  }
 
   const handleNewLetter = (letter: string) => {
     if (done) return;
@@ -52,13 +61,13 @@ export const Game = () => {
     const guess = board[guessIndex];
     const isGuessComplete = Boolean(guess?.at(-1));
 
-    if (guess && isGuessComplete && !wordList.includes(guess.join(''))) {
+    if (guess && isGuessComplete && !DICTIONARY.has(guess.join(''))) {
       return;
     }
 
     const isBoardComplete = isGuessComplete && guessIndex === board.length - 1;
     const isGuessCorrect = Boolean(
-      guess?.every((letter, index) => TARGET[index] === letter),
+      guess?.every((letter, index) => target[index] === letter),
     );
 
     if (isGuessComplete) {
@@ -72,12 +81,12 @@ export const Game = () => {
 
   return (
     <main className="mx-auto flex h-[100dvh] w-full max-w-lg flex-col items-center justify-evenly gap-8 p-1">
-      <Board board={board} target={TARGET} activeGuessIndex={guessIndex} />
+      <Board board={board} target={target} activeGuessIndex={guessIndex} />
       <Keyboard
         getLetterState={(letter) =>
           getKeyboardLetterState({
             letter,
-            target: TARGET,
+            target: target,
             board: board.slice(0, guessIndex),
           })
         }
