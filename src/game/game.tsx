@@ -1,22 +1,16 @@
 import { useState } from 'react';
 import { Board } from './board/board';
 import { Keyboard } from './keyboard/keyboard';
-import {
-  INIT_BOARD,
-  DICTIONARY,
-  TARGET_WORDS,
-} from '../shared/constants/constants';
+import { INIT_BOARD, DICTIONARY } from '../shared/constants/constants';
 import {
   getIndexOfLastInput,
   getIndexOfNextInput,
   getKeyboardLetterState,
+  getTargetForToday,
 } from '../shared/utils/utils';
 import { type Board as BoardType } from '../shared/types/types';
 
-// Note: random index is floored, so it can't possibly exceed greatest index
-const targetWordsLength = TARGET_WORDS.length;
-const randomTargetIndex = Math.floor(Math.random() * targetWordsLength);
-const target = TARGET_WORDS[randomTargetIndex];
+const target = getTargetForToday();
 console.log(`Not-so-subtle hint: ${target}`);
 
 export const Game = () => {
@@ -86,7 +80,7 @@ export const Game = () => {
         getLetterState={(letter) =>
           getKeyboardLetterState({
             letter,
-            target: target,
+            target,
             board: board.slice(0, guessIndex),
           })
         }
