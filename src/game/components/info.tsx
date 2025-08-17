@@ -1,4 +1,4 @@
-import { useEffect, type ComponentProps } from 'react';
+import { useEffect, useRef, type ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 const DEFAULT_TIMEOUT_MS = 2000;
@@ -14,11 +14,16 @@ export const Info = ({
   onTimeout,
   ...props
 }: Props) => {
+  const timeoutRef = useRef<number | null>(null);
+
   // If `onTimeout` provided, call it after timeout
+  // (tracked via ref so it's not restarted with each render)
   useEffect(() => {
-    if (!onTimeout) return;
-    const timeout = setTimeout(onTimeout, timeoutMs);
-    return () => clearTimeout(timeout);
+    if (!onTimeout || timeoutRef.current) return;
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
+      onTimeout();
+    }, timeoutMs);
   }, [onTimeout, timeoutMs]);
 
   return (
